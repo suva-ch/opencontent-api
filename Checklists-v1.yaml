@@ -1,0 +1,503 @@
+openapi: 3.0.4
+info:
+  title: Checklists API
+  description: API for Checklists functionality.
+  contact:
+    name: Suva
+    url: https://github.com/suva-ch/opencontent-api
+    email: no-reply@suva.ch
+  license:
+    name: Apache License 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+  version: v1
+servers:
+  - url: https://localhost:7294
+    description: Local DEV server
+  - url: https://www.suva.ch/contentApi
+    description: SYST (via Headless-Proxy)
+  - url: https://suvach-content-api-syst.apps.suvanet.ch
+    description: SYST (OpenShift)
+  - url: https://www.suva.ch/contentApi/
+    description: Production server
+  - url: https://intg.suva.ch/contentApi/
+    description: Staging server
+paths:
+  '/v1/Checklists/{id}':
+    get:
+      tags:
+        - Checklists
+      summary: Get checklist by ID
+      description: Retrieves a checklist by its unique GUID identifier in the specified language.
+      parameters:
+        - name: id
+          in: path
+          description: The unique GUID identifier of the checklist.
+          required: true
+          schema:
+            type: string
+            format: uuid
+          example: 90e15807-aec2-4f23-9495-02f4db336ec8
+        - name: lang
+          in: query
+          description: Language code.
+          required: true
+          schema:
+            type: string
+          example: de-CH
+      responses:
+        '200':
+          description: Checklist successfully retrieved.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChecklistDetailDto'
+        '404':
+          description: Checklist not found.
+  '/v1/Checklists/{uniqueId}':
+    get:
+      tags:
+        - Checklists
+      summary: Get checklist by unique ID
+      description: 'Retrieves a checklist by its unique ID with language code {id}_{lang}.'
+      parameters:
+        - name: uniqueId
+          in: path
+          description: 'Id with language ({id}_{lang}).'
+          required: true
+          schema:
+            type: string
+          example: 90e15807-aec2-4f23-9495-02f4db336ec8_de-CH
+      responses:
+        '200':
+          description: Checklist successfully retrieved.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChecklistDetailDto'
+        '404':
+          description: Checklist not found.
+        '400':
+          description: Invalid Url.
+  /v1/Checklists:
+    get:
+      tags:
+        - Checklists
+      summary: Get all checklists
+      description: 'Retrieves a list of checklists filtered by industry, topic, and audience.'
+      parameters:
+        - name: lang
+          in: query
+          description: Language code.
+          required: true
+          schema:
+            type: string
+          example: de-CH
+        - name: industryId
+          in: query
+          description: Array of industry IDs to filter checklists.
+          schema:
+            type: array
+            items:
+              type: string
+              format: uuid
+          example: ["bf8a6e33-65fb-19d5-46d5-368c0dfda498"]
+        - name: topicId
+          in: query
+          description: Array of topic IDs to filter checklists.
+          schema:
+            type: array
+            items:
+              type: string
+              format: uuid
+          example: ["4f468c82-ce05-19b6-e628-1318e43899d7"]
+        - name: audienceId
+          in: query
+          description: Array of audience IDs to filter checklists.
+          schema:
+            type: array
+            items:
+              type: string
+              format: uuid
+          example: ["521af021-3fb3-631a-ac7d-3c3e848f1a2c"]
+        - name: debugMode
+          in: query
+          description: Enables debug mode for additional information.
+          schema:
+            type: boolean
+            default: false
+        - name: enableCache
+          in: query
+          description: Enables caching for the request.
+          schema:
+            type: boolean
+            default: true
+      responses:
+        '200':
+          description: Checklists successfully retrieved.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ChecklistListDto'
+  /v1/Checklists/industries:
+    get:
+      tags:
+        - Checklists
+      summary: Get industries
+      description: Retrieves a list of available industries for filtering checklists.
+      parameters:
+        - name: lang
+          in: query
+          description: Language code.
+          required: true
+          schema:
+            type: string
+          example: de-CH
+      responses:
+        '200':
+          description: Industries successfully retrieved.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/FilterDto'
+  /v1/Checklists/topics:
+    get:
+      tags:
+        - Checklists
+      summary: Get topics
+      description: Retrieves a list of available topics for filtering checklists.
+      parameters:
+        - name: lang
+          in: query
+          description: Language code.
+          required: true
+          schema:
+            type: string
+          example: de-CH
+      responses:
+        '200':
+          description: Topics successfully retrieved.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/FilterDto'
+  /v1/Checklists/audiences:
+    get:
+      tags:
+        - Checklists
+      summary: Get audiences
+      description: Retrieves a list of available audiences for filtering checklists.
+      parameters:
+        - name: lang
+          in: query
+          description: Language code.
+          required: true
+          schema:
+            type: string
+          example: de-CH
+      responses:
+        '200':
+          description: Audiences successfully retrieved.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/FilterDto'
+components:
+  schemas:
+    ActionDto:
+      title: Action
+      type: object
+      properties:
+        actionId:
+          type: string
+          description: Unique identifier of the action.
+          format: uuid
+        description:
+          type: string
+          description: Description of the action.
+          nullable: true
+      additionalProperties: false
+      description: Represents an action associated with a checkpoint in a checklist.
+    AttachmentDto:
+      title: Attachment
+      required:
+        - attachmentId
+        - url
+      type: object
+      properties:
+        attachmentId:
+          type: string
+          description: Unique identifier of the attachment.
+          format: uuid
+        type:
+          type: string
+          description: Type of the attachment.
+          nullable: true
+        title:
+          type: string
+          description: Title of the attachment.
+          nullable: true
+        description:
+          type: string
+          description: Description of the attachment.
+          nullable: true
+        url:
+          type: string
+          description: URL of the attachment.
+          nullable: true
+      additionalProperties: false
+      description: Represents an attachment associated with a checklist or checkpoint.
+    BaseChecklistDto:
+      title: BaseChecklist
+      required:
+        - id
+        - language
+        - number
+        - title
+        - uniqueId
+      type: object
+      properties:
+        uniqueId:
+          type: string
+          description: Unique identifier of the checklist.
+          nullable: true
+        id:
+          type: string
+          description: Unique GUID identifier of the checklist.
+          format: uuid
+        language:
+          type: string
+          description: Language code of the checklist.
+          nullable: true
+        title:
+          type: string
+          description: Title of the checklist.
+          nullable: true
+        number:
+          type: string
+          description: Checklist number.
+          default: abcd1234
+          nullable: true
+        publicationDate:
+          type: string
+          description: Publication date of the checklist.
+          format: date-time
+        imageUrl:
+          type: string
+          description: URL of the checklist image.
+          nullable: true
+        lastUpdated:
+          type: string
+          description: Last updated date of the checklist.
+          format: date-time
+        orderNumber:
+          type: string
+          description: Order number of the checklist.
+          nullable: true
+      additionalProperties: false
+      description: 'Base class for checklist data transfer objects, containing common properties.'
+    ChecklistDetailDto:
+      title: ChecklistDetail
+      required:
+        - attachments
+        - groups
+      type: object
+      allOf:
+        - $ref: '#/components/schemas/BaseChecklistDto'
+      properties:
+        groups:
+          type: array
+          items:
+            $ref: '#/components/schemas/GroupDto'
+          description: Groups associated with the checklist.
+          nullable: true
+        attachments:
+          type: array
+          items:
+            $ref: '#/components/schemas/AttachmentDto'
+          description: Attachments associated with the checklist.
+          nullable: true
+        description:
+          type: string
+          description: Description of the checklist.
+          nullable: true
+        orderLink:
+          type: string
+          description: Url for ordering the product/checklist.
+          nullable: true
+        downloadLink:
+          type: string
+          description: Url for downloading the product/checklist.
+          nullable: true
+        onlineChecklist:
+          type: string
+          description: Url to the online checklist.
+          nullable: true
+        detailLink:
+          type: string
+          description: Url to the checklist detail page.
+          nullable: true
+      additionalProperties: false
+      description: 'Represents a detailed checklist item, including groups, attachments, and additional links.'
+    ChecklistListDto:
+      title: ChecklistList
+      type: object
+      allOf:
+        - $ref: '#/components/schemas/BaseChecklistDto'
+      properties:
+        todo:
+          type: string
+          description: To-do information for the checklist.
+          nullable: true
+      additionalProperties: false
+      description: 'Represents a checklist item in a list view, extending base checklist properties with to-do information.'
+    CheckpointDto:
+      title: Checkpoint
+      required:
+        - actions
+        - attachments
+        - checkpointId
+        - choices
+        - type
+      type: object
+      properties:
+        checkpointId:
+          type: string
+          description: Unique identifier of the checkpoint.
+          format: uuid
+        choices:
+          type: array
+          items:
+            $ref: '#/components/schemas/ChoiceDto'
+          description: Choices available for the checkpoint.
+          nullable: true
+        actions:
+          type: array
+          items:
+            $ref: '#/components/schemas/ActionDto'
+          description: Actions associated with the checkpoint.
+          nullable: true
+        header:
+          type: string
+          description: Header of the checkpoint.
+          nullable: true
+        title:
+          type: string
+          description: Title of the checkpoint.
+          nullable: true
+        description:
+          type: string
+          description: Description of the checkpoint.
+          nullable: true
+        label:
+          type: string
+          description: Label of the checkpoint.
+          nullable: true
+        type:
+          type: string
+          description: Type of the checkpoint.
+          nullable: true
+        attachments:
+          type: array
+          items:
+            $ref: '#/components/schemas/AttachmentDto'
+          description: Attachments associated with the checkpoint.
+          nullable: true
+      additionalProperties: false
+      description: 'Represents a checkpoint within a checklist group, including choices and actions.'
+    ChoiceDto:
+      title: Choice
+      required:
+        - choiceId
+      type: object
+      properties:
+        choiceId:
+          type: string
+          description: Unique identifier of the choice.
+          format: uuid
+        id:
+          type: string
+          description: ID of the choice.
+          nullable: true
+        localization:
+          type: string
+          description: Localization information for the choice.
+          nullable: true
+        value:
+          type: string
+          description: Value of the choice.
+          nullable: true
+        createsReport:
+          type: boolean
+          description: Indicates whether this choice creates a report.
+      additionalProperties: false
+      description: Represents a choice available for a checkpoint in a checklist.
+    FilterDto:
+      title: Filter
+      required:
+        - id
+        - name
+      type: object
+      properties:
+        name:
+          type: string
+          description: Name of the filter.
+          nullable: true
+        id:
+          type: string
+          description: Unique identifier of the filter.
+          format: uuid
+        count:
+          type: integer
+          description: Number of items associated with the filter.
+          format: int32
+        children:
+          type: array
+          items:
+            $ref: '#/components/schemas/FilterDto'
+          description: 'Child filters, forming a recursive hierarchy. Each child is a FilterDto with the same structure.'
+          nullable: true
+      additionalProperties: false
+      description: 'Represents a filter with a recursive hierarchy, used for categorizing or filtering content (e.g., industries, topics, audiences).'
+    GroupDto:
+      title: ChecklistGroup
+      required:
+        - checkpoints
+        - groupId
+        - title
+      type: object
+      properties:
+        groupId:
+          type: string
+          description: Unique identifier of the group.
+          format: uuid
+        checkpoints:
+          type: array
+          items:
+            $ref: '#/components/schemas/CheckpointDto'
+          description: Checkpoints associated with the group.
+          nullable: true
+        title:
+          type: string
+          description: Title of the group.
+          nullable: true
+      additionalProperties: false
+      description: Represents a group of checkpoints within a checklist.
+  securitySchemes:
+    ApiKey:
+      type: apiKey
+      description: ApiKey must appear in header
+      name: ApiKey
+      in: header
+security:
+  - ApiKey: [ ]
+tags:
+  - name: Checklists
+    description: 'API for managing and retrieving checklists, including filtering by industries, topics, and audiences.'
