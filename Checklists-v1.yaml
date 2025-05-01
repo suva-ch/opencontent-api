@@ -301,6 +301,14 @@ components:
           type: string
           description: Order number of the checklist.
           nullable: true
+        orderLink:
+          type: string
+          description: Url for ordering the product/checklist.
+          nullable: true
+        downloadLink:
+          type: string
+          description: Url for downloading the product/checklist.
+          nullable: true
       additionalProperties: false
       description: 'Base class for checklist data transfer objects, containing common properties.'
     ChecklistDetailDto:
@@ -327,14 +335,6 @@ components:
         description:
           type: string
           description: Description of the checklist.
-          nullable: true
-        orderLink:
-          type: string
-          description: Url for ordering the product/checklist.
-          nullable: true
-        downloadLink:
-          type: string
-          description: Url for downloading the product/checklist.
           nullable: true
         onlineChecklist:
           type: string
