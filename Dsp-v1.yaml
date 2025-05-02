@@ -1,0 +1,441 @@
+openapi: 3.0.4
+info:
+  title: Dsp API
+  description: API for Dsp functionality.
+  contact:
+    name: Suva
+    url: https://github.com/suva-ch/opencontent-api
+    email: no-reply@suva.ch
+  license:
+    name: Apache License 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+  version: v1
+servers:
+  - url: https://www.suva.ch/contentApi/
+    description: Production server
+  - url: https://intg.suva.ch/contentApi/
+    description: Staging server
+paths:
+  /v1/Dsp/instructions:
+    get:
+      tags:
+        - Dsp
+      summary: Get instructions
+      description: Retrieves a list of DSP instructions for the specified language.
+      parameters:
+        - name: lang
+          in: query
+          description: Language code
+          required: true
+          schema:
+            type: string
+          example: de-CH
+      responses:
+        '200':
+          description: Returns the list of DSP instructions.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  title: BaseInstruction
+                  oneOf:
+                    - $ref: '#/components/schemas/BaseInstructionDto'
+                    - $ref: '#/components/schemas/InstructionWithImageDto'
+                    - $ref: '#/components/schemas/TextInstructionDto'
+                    - $ref: '#/components/schemas/VideoInstructionDto'
+                    - $ref: '#/components/schemas/ELearningInstructionDto'
+                  description: 'Base class for DSP instruction data transfer objects, containing common properties.'
+  /v1/Dsp/languages:
+    get:
+      tags:
+        - Dsp
+      summary: Get languages
+      description: Retrieves a list of available languages for DSP.
+      responses:
+        '200':
+          description: Returns the list of available languages.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/LanguageDto'
+  /v1/Dsp/jobprofiles:
+    get:
+      tags:
+        - Dsp
+      summary: Get job profiles
+      description: Retrieves a list of job profiles for the specified language.
+      parameters:
+        - name: lang
+          in: query
+          description: Language code
+          required: true
+          schema:
+            type: string
+          example: de-CH
+      responses:
+        '200':
+          description: Returns the list of job profiles.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/KeyValueItemFieldDto'
+  /v1/Dsp/professionalFields:
+    get:
+      tags:
+        - Dsp
+      summary: Get professional fields
+      description: Retrieves a list of professional fields for the specified language.
+      parameters:
+        - name: lang
+          in: query
+          description: Language code
+          required: true
+          schema:
+            type: string
+          example: de-CH
+      responses:
+        '200':
+          description: Returns the list of professional fields.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/KeyValueItemFieldDto'
+  /v1/Dsp/authors:
+    get:
+      tags:
+        - Dsp
+      summary: Get authors
+      description: Retrieves a list of authors for the specified language.
+      parameters:
+        - name: lang
+          in: query
+          description: Language code
+          required: true
+          schema:
+            type: string
+          example: de-CH
+      responses:
+        '200':
+          description: Returns the list of authors.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/KeyValueItemFieldDto'
+  /v1/Dsp/scormformats:
+    get:
+      tags:
+        - Dsp
+      summary: Get SCORM formats
+      description: Retrieves a list of SCORM formats for the specified language.
+      parameters:
+        - name: lang
+          in: query
+          description: Language code
+          required: true
+          schema:
+            type: string
+          example: de-CH
+      responses:
+        '200':
+          description: Returns the list of SCORM formats.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/KeyValueItemFieldDto'
+  /v1/Dsp/types:
+    get:
+      tags:
+        - Dsp
+      summary: Get DSP types
+      description: Retrieves a list of DSP types for the specified language.
+      parameters:
+        - name: lang
+          in: query
+          description: Language code
+          required: true
+          schema:
+            type: string
+          example: de-CH
+      responses:
+        '200':
+          description: Returns the list of DSP types.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/KeyValueItemFieldDto'
+components:
+  schemas:
+    BaseInstructionDto:
+      title: BaseInstruction
+      required:
+        - $type
+        - author
+        - branchen
+        - instruktionstypen
+        - jobprofile
+        - language
+        - type
+        - uniqueId
+      type: object
+      properties:
+        $type:
+          type: string
+        uniqueId:
+          type: string
+          description: Unique identifier of the instruction.
+          nullable: true
+        id:
+          type: string
+          description: Unique identifier of the instruction as a GUID.
+          format: uuid
+        language:
+          type: string
+          description: Language code of the instruction.
+          nullable: true
+        type:
+          type: string
+          description: Type of the instruction.
+          nullable: true
+        title:
+          type: string
+          description: Title of the instruction.
+          default: ''
+          nullable: true
+        subTitle:
+          type: string
+          description: Subtitle of the instruction.
+          default: ''
+          nullable: true
+        description:
+          type: string
+          description: Description of the instruction.
+          default: ''
+          nullable: true
+        jobprofile:
+          type: array
+          items:
+            type: string
+          description: Job profiles associated with the instruction.
+          nullable: true
+        branchen:
+          type: array
+          items:
+            type: string
+          description: Industries associated with the instruction.
+          nullable: true
+        author:
+          type: string
+          description: Author of the instruction.
+          nullable: true
+        instruktionstypen:
+          type: array
+          items:
+            type: string
+          description: Instruction types associated with the instruction.
+          nullable: true
+        gueltigkeitsdauer:
+          type: integer
+          description: Validity duration of the instruction in days.
+          format: int32
+        lastUpdateDate:
+          type: string
+          description: Last update date of the instruction.
+          format: date-time
+        issueDate:
+          type: string
+          description: Issue date of the instruction.
+          format: date-time
+      additionalProperties: false
+      description: 'Base class for DSP instruction data transfer objects, containing common properties.'
+      discriminator:
+        propertyName: $type
+    ELearningInstructionDto:
+      title: ELearningInstruction
+      required:
+        - linkToFile
+        - scormFormat
+      type: object
+      allOf:
+        - $ref: '#/components/schemas/InstructionWithImageDto'
+      properties:
+        scormFormat:
+          type: string
+          description: SCORM format of the e-learning instruction.
+          nullable: true
+        linkToFile:
+          type: string
+          description: Link to the e-learning file.
+          nullable: true
+      additionalProperties: false
+      description: 'Represents an e-learning DSP instruction, including SCORM format and file link.'
+    Fields:
+      title: ImageSetFields
+      type: object
+      properties:
+        imageSetModelDefault:
+          $ref: '#/components/schemas/ImageSetModel'
+        imageSetModelM:
+          $ref: '#/components/schemas/ImageSetModel'
+        imageSetModelS:
+          $ref: '#/components/schemas/ImageSetModel'
+        imageSetModelXl:
+          $ref: '#/components/schemas/ImageSetModel'
+        imageSetModelXs:
+          $ref: '#/components/schemas/ImageSetModel'
+        imageSetModelL:
+          $ref: '#/components/schemas/ImageSetModel'
+      additionalProperties: false
+      description: Represents a collection of image set models for different sizes in a responsive image set.
+    ImageSetModel:
+      title: ImageSetModel
+      type: object
+      properties:
+        value:
+          $ref: '#/components/schemas/Value'
+      additionalProperties: false
+      description: Represents a single image set model within a responsive image set.
+    InstructionWithImageDto:
+      title: InstructionWithImage
+      required:
+        - $type
+      type: object
+      allOf:
+        - $ref: '#/components/schemas/BaseInstructionDto'
+      properties:
+        $type:
+          type: string
+        image:
+          $ref: '#/components/schemas/ResponsiveImageSetViewModel'
+      additionalProperties: false
+      description: 'Represents a DSP instruction with an associated image set, extending base instruction properties.'
+      discriminator:
+        propertyName: $type
+    KeyValueItemFieldDto:
+      title: KeyValueItemField
+      required:
+        - id
+        - lastUpdateDate
+        - name
+        - revision
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique identifier of the field item.
+          format: uuid
+        name:
+          type: string
+          description: Name of the field item.
+          nullable: true
+        revision:
+          type: string
+          description: Revision identifier of the field item.
+          nullable: true
+        lastUpdateDate:
+          type: string
+          description: Last update date of the field item.
+          format: date-time
+      additionalProperties: false
+      description: 'Represents a key-value pair for a field item, typically used for categorizing or filtering content (e.g., industries, topics).'
+    LanguageDto:
+      title: Language
+      required:
+        - code
+      type: object
+      properties:
+        code:
+          type: string
+          description: Language code.
+          nullable: true
+      additionalProperties: false
+      description: Represents a language with its code.
+    ResponsiveImageSetViewModel:
+      title: ResponsiveImageSet
+      required:
+        - id
+        - url
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique identifier of the image set.
+          format: uuid
+        url:
+          type: string
+          description: URL of the image set.
+          nullable: true
+        fields:
+          $ref: '#/components/schemas/Fields'
+      additionalProperties: false
+      description: Represents a responsive image set for use in DSP instructions.
+    TextInstructionDto:
+      title: TextInstruction
+      type: object
+      allOf:
+        - $ref: '#/components/schemas/BaseInstructionDto'
+      additionalProperties: false
+      description: 'Represents a text-based DSP instruction, inheriting base instruction properties.'
+    Value:
+      title: ImageSetValue
+      type: object
+      properties:
+        src:
+          type: string
+          description: Source URL of the image.
+          default: ''
+          nullable: true
+        alt:
+          type: string
+          description: Alt text for the image.
+          default: ''
+          nullable: true
+        width:
+          type: string
+          description: Width of the image.
+          default: 
+          nullable: true
+        height:
+          type: string
+          description: Height of the image.
+          default: 
+          nullable: true
+      additionalProperties: false
+      description: Represents detailed image information for an image set model.
+    VideoInstructionDto:
+      title: VideoInstruction
+      required:
+        - vimeoId
+      type: object
+      allOf:
+        - $ref: '#/components/schemas/InstructionWithImageDto'
+      properties:
+        vimeoId:
+          type: integer
+          description: Vimeo ID of the video instruction.
+          format: int64
+      additionalProperties: false
+      description: 'Represents a video-based DSP instruction, including a Vimeo ID and an image set.'
+  securitySchemes:
+    ApiKey:
+      type: apiKey
+      description: ApiKey must appear in header
+      name: ApiKey
+      in: header
+security:
+  - ApiKey: [ ]
+tags:
+  - name: Dsp
+    description: 'API for managing and retrieving DSP-related data, including instructions, job profiles, and professional fields.'
