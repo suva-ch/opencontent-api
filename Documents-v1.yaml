@@ -1,7 +1,7 @@
 openapi: 3.0.4
 info:
-  title: Documents API
-  description: API for Documents functionality.
+  title: documents API
+  description: API for documents functionality.
   contact:
     name: Suva
     url: https://github.com/suva-ch/opencontent-api
@@ -19,7 +19,8 @@ paths:
   /v1/PreventionDocuments:
     get:
       tags:
-        - Documents
+        - documents
+        - prevention
       summary: Get prevention documents
       description: 'Retrieves a list of prevention documents filtered by industry, content type, and topic.'
       parameters:
@@ -75,7 +76,8 @@ paths:
   /v1/PreventionDocuments/industries:
     get:
       tags:
-        - Documents
+        - documents
+        - prevention
       summary: Get industries
       description: Retrieves a list of available industries for filtering prevention documents.
       parameters:
@@ -98,7 +100,8 @@ paths:
   /v1/PreventionDocuments/topics:
     get:
       tags:
-        - Documents
+        - documents
+        - prevention
       summary: Get topics
       description: Retrieves a list of available topics for filtering prevention documents.
       parameters:
@@ -121,7 +124,8 @@ paths:
   /v1/PreventionDocuments/contenttypes:
     get:
       tags:
-        - Documents
+        - documents
+        - prevention
       summary: Get content types
       description: Retrieves a list of available content types for filtering prevention documents.
       parameters:
@@ -144,7 +148,8 @@ paths:
   /v1/PreventionDocuments/audiences:
     get:
       tags:
-        - Documents
+        - documents
+        - prevention
       summary: Get audiences
       description: Retrieves a list of available audiences for filtering prevention documents.
       parameters:
@@ -291,5 +296,5 @@ components:
 security:
   - ApiKey: [ ]
 tags:
-  - name: Documents
+  - name: documents
     description: 'API for managing and retrieving prevention documents, including filtering by industries, topics, and content types.'

@@ -1,7 +1,7 @@
 openapi: 3.0.4
 info:
-  title: Dsp API
-  description: API for Dsp functionality.
+  title: instructions API
+  description: API for instructions functionality.
   contact:
     name: Suva
     url: https://github.com/suva-ch/opencontent-api
@@ -19,7 +19,8 @@ paths:
   /v1/Dsp/instructions:
     get:
       tags:
-        - Dsp
+        - instructions
+        - prevention
       summary: Get instructions
       description: Retrieves a list of DSP instructions for the specified language.
       parameters:
@@ -49,7 +50,8 @@ paths:
   /v1/Dsp/languages:
     get:
       tags:
-        - Dsp
+        - instructions
+        - prevention
       summary: Get languages
       description: Retrieves a list of available languages for DSP.
       responses:
@@ -64,7 +66,8 @@ paths:
   /v1/Dsp/jobprofiles:
     get:
       tags:
-        - Dsp
+        - instructions
+        - prevention
       summary: Get job profiles
       description: Retrieves a list of job profiles for the specified language.
       parameters:
@@ -87,7 +90,8 @@ paths:
   /v1/Dsp/professionalFields:
     get:
       tags:
-        - Dsp
+        - instructions
+        - prevention
       summary: Get professional fields
       description: Retrieves a list of professional fields for the specified language.
       parameters:
@@ -110,7 +114,8 @@ paths:
   /v1/Dsp/authors:
     get:
       tags:
-        - Dsp
+        - instructions
+        - prevention
       summary: Get authors
       description: Retrieves a list of authors for the specified language.
       parameters:
@@ -133,7 +138,8 @@ paths:
   /v1/Dsp/scormformats:
     get:
       tags:
-        - Dsp
+        - instructions
+        - prevention
       summary: Get SCORM formats
       description: Retrieves a list of SCORM formats for the specified language.
       parameters:
@@ -156,7 +162,8 @@ paths:
   /v1/Dsp/types:
     get:
       tags:
-        - Dsp
+        - instructions
+        - prevention
       summary: Get DSP types
       description: Retrieves a list of DSP types for the specified language.
       parameters:
@@ -437,5 +444,5 @@ components:
 security:
   - ApiKey: [ ]
 tags:
-  - name: Dsp
+  - name: instructions
     description: 'API for managing and retrieving DSP-related data, including instructions, job profiles, and professional fields.'

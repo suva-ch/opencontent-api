@@ -1,7 +1,7 @@
 openapi: 3.0.4
 info:
-  title: Checklists API
-  description: API for Checklists functionality.
+  title: checklists API
+  description: API for checklists functionality.
   contact:
     name: Suva
     url: https://github.com/suva-ch/opencontent-api
@@ -11,10 +11,6 @@ info:
     url: https://www.apache.org/licenses/LICENSE-2.0.html
   version: v1
 servers:
-  - url: https://www.suva.ch/contentApi
-    description: SYST (via Headless-Proxy)
-  - url: https://suvach-content-api-syst.apps.suvanet.ch
-    description: SYST (OpenShift)
   - url: https://www.suva.ch/contentApi/
     description: Production server
   - url: https://intg.suva.ch/contentApi/
@@ -23,7 +19,8 @@ paths:
   '/v1/Checklists/{id}':
     get:
       tags:
-        - Checklists
+        - checklists
+        - prevention
       summary: Get checklist by ID
       description: Retrieves a checklist by its unique GUID identifier in the specified language.
       parameters:
@@ -54,7 +51,8 @@ paths:
   '/v1/Checklists/{uniqueId}':
     get:
       tags:
-        - Checklists
+        - checklists
+        - prevention
       summary: Get checklist by unique ID
       description: 'Retrieves a checklist by its unique ID with language code {id}_{lang}.'
       parameters:
@@ -79,7 +77,8 @@ paths:
   /v1/Checklists:
     get:
       tags:
-        - Checklists
+        - checklists
+        - prevention
       summary: Get all checklists
       description: 'Retrieves a list of checklists filtered by industry, topic, and audience.'
       parameters:
@@ -141,7 +140,8 @@ paths:
   /v1/Checklists/industries:
     get:
       tags:
-        - Checklists
+        - checklists
+        - prevention
       summary: Get industries
       description: Retrieves a list of available industries for filtering checklists.
       parameters:
@@ -164,7 +164,8 @@ paths:
   /v1/Checklists/topics:
     get:
       tags:
-        - Checklists
+        - checklists
+        - prevention
       summary: Get topics
       description: Retrieves a list of available topics for filtering checklists.
       parameters:
@@ -187,7 +188,8 @@ paths:
   /v1/Checklists/audiences:
     get:
       tags:
-        - Checklists
+        - checklists
+        - prevention
       summary: Get audiences
       description: Retrieves a list of available audiences for filtering checklists.
       parameters:
@@ -349,11 +351,6 @@ components:
       type: object
       allOf:
         - $ref: '#/components/schemas/BaseChecklistDto'
-      properties:
-        todo:
-          type: string
-          description: To-do information for the checklist.
-          nullable: true
       additionalProperties: false
       description: 'Represents a checklist item in a list view, extending base checklist properties with to-do information.'
     CheckpointDto:
@@ -497,5 +494,5 @@ components:
 security:
   - ApiKey: [ ]
 tags:
-  - name: Checklists
+  - name: checklists
     description: 'API for managing and retrieving checklists, including filtering by industries, topics, and audiences.'
