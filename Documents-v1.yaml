@@ -1,0 +1,295 @@
+openapi: 3.0.4
+info:
+  title: Documents API
+  description: API for Documents functionality.
+  contact:
+    name: Suva
+    url: https://github.com/suva-ch/opencontent-api
+    email: no-reply@suva.ch
+  license:
+    name: Apache License 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+  version: v1
+servers:
+  - url: https://www.suva.ch/contentApi/
+    description: Production server
+  - url: https://intg.suva.ch/contentApi/
+    description: Staging server
+paths:
+  /v1/PreventionDocuments:
+    get:
+      tags:
+        - Documents
+      summary: Get prevention documents
+      description: 'Retrieves a list of prevention documents filtered by industry, content type, and topic.'
+      parameters:
+        - name: lang
+          in: query
+          description: Language code
+          required: true
+          schema:
+            type: string
+          example: de-CH
+        - name: industryId
+          in: query
+          description: Array of industry IDs to filter documents
+          schema:
+            type: array
+            items:
+              type: string
+              format: uuid
+          example: ["bf8a6e33-65fb-19d5-46d5-368c0dfda498"]
+        - name: contentTypeId
+          in: query
+          description: Array of content type IDs to filter documents
+          schema:
+            type: array
+            items:
+              type: string
+              format: uuid
+          example: ["2bc5b378-3e69-7f7a-ca4f-3d05593cce3d"]
+        - name: topicId
+          in: query
+          description: Array of topic IDs to filter documents
+          schema:
+            type: array
+            items:
+              type: string
+              format: uuid
+          example: ["7aa3d28c-e54d-d9ec-c8ba-beeada5d4893"]
+        - name: searchTerm
+          in: query
+          description: Search term to filter documents by name or description
+          schema:
+            type: string
+            default: ''
+      responses:
+        '200':
+          description: Returns the list of prevention documents.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ProductDto'
+  /v1/PreventionDocuments/industries:
+    get:
+      tags:
+        - Documents
+      summary: Get industries
+      description: Retrieves a list of available industries for filtering prevention documents.
+      parameters:
+        - name: lang
+          in: query
+          description: Language code
+          required: true
+          schema:
+            type: string
+          example: de-CH
+      responses:
+        '200':
+          description: Returns the list of available industries.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/FilterDto'
+  /v1/PreventionDocuments/topics:
+    get:
+      tags:
+        - Documents
+      summary: Get topics
+      description: Retrieves a list of available topics for filtering prevention documents.
+      parameters:
+        - name: lang
+          in: query
+          description: Language code
+          required: true
+          schema:
+            type: string
+          example: de-CH
+      responses:
+        '200':
+          description: Returns the list of available topics.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/FilterDto'
+  /v1/PreventionDocuments/contenttypes:
+    get:
+      tags:
+        - Documents
+      summary: Get content types
+      description: Retrieves a list of available content types for filtering prevention documents.
+      parameters:
+        - name: lang
+          in: query
+          description: Language code
+          required: true
+          schema:
+            type: string
+          example: de-CH
+      responses:
+        '200':
+          description: Returns the list of available content types.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/FilterDto'
+  /v1/PreventionDocuments/audiences:
+    get:
+      tags:
+        - Documents
+      summary: Get audiences
+      description: Retrieves a list of available audiences for filtering prevention documents.
+      parameters:
+        - name: lang
+          in: query
+          description: Language code
+          required: true
+          schema:
+            type: string
+          example: de-CH
+      responses:
+        '200':
+          description: Returns the list of available audiences.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/FilterDto'
+components:
+  schemas:
+    FilterDto:
+      title: Filter
+      required:
+        - id
+        - name
+      type: object
+      properties:
+        name:
+          type: string
+          description: Name of the filter.
+          nullable: true
+        id:
+          type: string
+          description: Unique identifier of the filter.
+          format: uuid
+        count:
+          type: integer
+          description: Number of items associated with the filter.
+          format: int32
+        children:
+          type: array
+          items:
+            $ref: '#/components/schemas/FilterDto'
+          description: 'Child filters, forming a recursive hierarchy. Each child is a FilterDto with the same structure.'
+          nullable: true
+      additionalProperties: false
+      description: 'Represents a filter with a recursive hierarchy, used for categorizing or filtering content (e.g., industries, topics, audiences).'
+    ProductDto:
+      title: Product
+      required:
+        - contentType
+        - description
+        - descriptionHtml
+        - detailLink
+        - id
+        - informationType
+        - isArchived
+        - isPhysicallyOrderable
+        - language
+        - title
+        - uniqueId
+      type: object
+      properties:
+        uniqueId:
+          type: string
+          description: Unique identifier of the product.
+          nullable: true
+        id:
+          type: string
+          description: Unique identifier of the product.
+          format: uuid
+        language:
+          type: string
+          description: Language code of the product.
+          nullable: true
+        title:
+          type: string
+          description: Title of the product.
+          nullable: true
+        orderNumber:
+          type: string
+          description: Order number of the product.
+          nullable: true
+        date:
+          type: string
+          description: Date of the product.
+          format: date-time
+        description:
+          type: string
+          description: Description of the product.
+          nullable: true
+        descriptionHtml:
+          type: string
+          description: HTML description of the product.
+          nullable: true
+        pages:
+          type: integer
+          description: Number of pages in the product.
+          format: int32
+          nullable: true
+        format:
+          type: string
+          description: Format of the product.
+          nullable: true
+        isArchived:
+          type: boolean
+          description: Indicates if the product is archived.
+        isPhysicallyOrderable:
+          type: boolean
+          description: Indicates if the product is physically orderable.
+        detailLink:
+          type: string
+          description: Detail link of the product.
+          nullable: true
+        directDownloadLink:
+          type: string
+          description: Direct download link of the product.
+          nullable: true
+        directDownloadType:
+          type: string
+          description: Direct download type of the product.
+          nullable: true
+        previewImageLink:
+          type: string
+          description: Preview image link of the product.
+          nullable: true
+        contentType:
+          type: string
+          description: Content type of the product.
+          nullable: true
+        informationType:
+          type: string
+          description: Information type of the product.
+          nullable: true
+      additionalProperties: false
+      description: Represents a prevention document with detailed product information.
+  securitySchemes:
+    ApiKey:
+      type: apiKey
+      description: ApiKey must appear in header
+      name: ApiKey
+      in: header
+security:
+  - ApiKey: [ ]
+tags:
+  - name: Documents
+    description: 'API for managing and retrieving prevention documents, including filtering by industries, topics, and content types.'

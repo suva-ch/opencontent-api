@@ -1,0 +1,395 @@
+openapi: 3.0.4
+info:
+  title: LWR API
+  description: API for LWR functionality.
+  contact:
+    name: Suva
+    url: https://github.com/suva-ch/opencontent-api
+    email: no-reply@suva.ch
+  license:
+    name: Apache License 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+  version: v1
+servers:
+  - url: https://www.suva.ch/contentApi/
+    description: Production server
+  - url: https://intg.suva.ch/contentApi/
+    description: Staging server
+paths:
+  /v1/Lwr:
+    get:
+      tags:
+        - LWR
+      summary: Get rulesets by professional field
+      description: Retrieves a list of rulesets filtered by professional field and language.
+      parameters:
+        - name: professionalFieldId
+          in: query
+          description: ID of the professional field to filter rulesets
+          schema:
+            type: string
+            format: uuid
+          example: 96df1448-d097-4432-879b-5b527e804378
+        - name: lang
+          in: query
+          description: Language code
+          required: true
+          schema:
+            type: string
+          example: de-CH
+        - name: includeRules
+          in: query
+          description: Include rules in the response
+          schema:
+            type: boolean
+            default: false
+      responses:
+        '200':
+          description: Returns the list of rulesets.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/RulesetDto'
+  '/v1/Lwr/{id}':
+    get:
+      tags:
+        - LWR
+      summary: Get ruleset by ID
+      description: Retrieves a ruleset by its unique ID and language.
+      parameters:
+        - name: id
+          in: path
+          description: Unique ID of the ruleset
+          required: true
+          schema:
+            type: string
+            format: uuid
+          example: 06e7561f-cd16-456d-a9e9-4b258fb788f7
+        - name: lang
+          in: query
+          description: Language code
+          required: true
+          schema:
+            type: string
+          example: de-CH
+      responses:
+        '200':
+          description: Returns the ruleset.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RulesetDto'
+  '/v1/Lwr/{uniqueId}':
+    get:
+      tags:
+        - LWR
+      summary: Get ruleset by unique ID
+      description: Retrieves a ruleset by its unique ID with language embedded (id_language).
+      parameters:
+        - name: uniqueId
+          in: path
+          description: Unique ID with language (id_language)
+          required: true
+          schema:
+            type: string
+          example: 06e7561f-cd16-456d-a9e9-4b258fb788f7_de-CH
+      responses:
+        '200':
+          description: Returns the ruleset.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RulesetDto'
+  '/v1/Lwr/rules/{id}':
+    get:
+      tags:
+        - LWR
+      summary: Get rule by ID
+      description: Retrieves a rule by its unique ID and language.
+      parameters:
+        - name: id
+          in: path
+          description: Unique ID of the rule
+          required: true
+          schema:
+            type: string
+            format: uuid
+          example: 5026D9BE-0140-4853-9ACE-0A9765EFDF64
+        - name: lang
+          in: query
+          description: Language code
+          required: true
+          schema:
+            type: string
+          example: de-CH
+      responses:
+        '200':
+          description: Returns the rule.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RuleDto'
+  '/v1/Lwr/rules/{uniqueId}':
+    get:
+      tags:
+        - LWR
+      summary: Get rule by unique ID
+      description: Retrieves a rule by its unique ID with language embedded (id_language).
+      parameters:
+        - name: uniqueId
+          in: path
+          description: Unique ID with language (id_language)
+          required: true
+          schema:
+            type: string
+          example: 5026D9BE-0140-4853-9ACE-0A9765EFDF64_de-CH
+      responses:
+        '200':
+          description: Returns the rule.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RuleDto'
+  /v1/Lwr/languages:
+    get:
+      tags:
+        - LWR
+      summary: Get languages
+      description: Retrieves a list of available languages for LWR.
+      responses:
+        '200':
+          description: Returns the list of available languages.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/LanguageDto'
+  /v1/Lwr/professionalFields:
+    get:
+      tags:
+        - LWR
+      summary: Get professional fields
+      description: Retrieves a list of professional fields for the specified language.
+      parameters:
+        - name: lang
+          in: query
+          description: Language code
+          required: true
+          schema:
+            type: string
+          example: de-CH
+      responses:
+        '200':
+          description: Returns the list of professional fields.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/KeyValueItemFieldDto'
+components:
+  schemas:
+    KeyValueItemFieldDto:
+      title: KeyValueItemField
+      required:
+        - id
+        - lastUpdateDate
+        - name
+        - revision
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique identifier of the field item.
+          format: uuid
+        name:
+          type: string
+          description: Name of the field item.
+          nullable: true
+        revision:
+          type: string
+          description: Revision identifier of the field item.
+          nullable: true
+        lastUpdateDate:
+          type: string
+          description: Last update date of the field item.
+          format: date-time
+      additionalProperties: false
+      description: 'Represents a key-value pair for a field item, typically used for categorizing or filtering content (e.g., industries, topics).'
+    LanguageDto:
+      title: Language
+      required:
+        - code
+      type: object
+      properties:
+        code:
+          type: string
+          description: Language code.
+          nullable: true
+      additionalProperties: false
+      description: Represents a language with its code.
+    RuleDto:
+      title: Rule
+      required:
+        - employeeText
+        - id
+        - language
+        - number
+        - revision
+        - supervisorText
+        - uniqueId
+        - url
+      type: object
+      properties:
+        uniqueId:
+          type: string
+          description: Unique identifier of the rule.
+          nullable: true
+        id:
+          type: string
+          description: Unique GUID of the rule.
+          format: uuid
+        language:
+          type: string
+          description: Language of the rule.
+          nullable: true
+        shortTitle:
+          type: string
+          description: Short title of the rule.
+          default: ''
+          nullable: true
+        title:
+          type: string
+          description: Title of the rule.
+          default: ''
+          nullable: true
+        employeeText:
+          type: string
+          description: Text for employees related to the rule.
+          nullable: true
+        supervisorText:
+          type: string
+          description: Text for supervisors related to the rule.
+          nullable: true
+        number:
+          type: integer
+          description: Number associated with the rule.
+          format: int32
+          default: -1
+        url:
+          type: string
+          description: URL of the rule.
+          nullable: true
+        imageUrl:
+          type: string
+          description: Image URL associated with the rule.
+          default: 
+          nullable: true
+        videoUrl:
+          type: string
+          description: Video URL associated with the rule.
+          default: 
+          nullable: true
+        vimeoId:
+          type: integer
+          description: Vimeo ID of the video associated with the rule.
+          format: int64
+          default: 
+          nullable: true
+        issueDate:
+          type: string
+          description: Issue date of the rule.
+          format: date-time
+          nullable: true
+        revision:
+          type: string
+          description: Revision of the rule.
+          nullable: true
+        lastUpdateDate:
+          type: string
+          description: Last update date of the rule.
+          format: date-time
+      additionalProperties: false
+      description: 'Represents a rule in the LWR system with detailed properties, including text and media links.'
+    RulesetDto:
+      title: Ruleset
+      required:
+        - id
+        - language
+        - uniqueId
+      type: object
+      properties:
+        uniqueId:
+          type: string
+          description: Unique identifier of the ruleset.
+          nullable: true
+        id:
+          type: string
+          description: Unique GUID of the ruleset.
+          format: uuid
+        language:
+          type: string
+          description: Language of the ruleset.
+          nullable: true
+        shortTitle:
+          type: string
+          description: Short title of the ruleset.
+          default: ''
+          nullable: true
+        title:
+          type: string
+          description: Title of the ruleset.
+          default: ''
+          nullable: true
+        shortDescription:
+          type: string
+          description: Short description of the ruleset.
+          default: ''
+          nullable: true
+        imageUrl:
+          type: string
+          description: Image URL associated with the ruleset.
+          default: 
+          nullable: true
+        url:
+          type: string
+          description: URL of the ruleset.
+          default: ''
+          nullable: true
+        rules:
+          type: array
+          items:
+            $ref: '#/components/schemas/RuleDto'
+          description: Collection of rules associated with the ruleset.
+          default: 
+          nullable: true
+        issueDate:
+          type: string
+          description: Issue date of the ruleset.
+          format: date-time
+          nullable: true
+        revision:
+          type: string
+          description: Revision of the ruleset.
+          default: ''
+          nullable: true
+        lastUpdateDate:
+          type: string
+          description: Last update date of the ruleset.
+          format: date-time
+      additionalProperties: false
+      description: 'Represents a ruleset in the LWR system, containing a collection of rules and associated metadata.'
+  securitySchemes:
+    ApiKey:
+      type: apiKey
+      description: ApiKey must appear in header
+      name: ApiKey
+      in: header
+security:
+  - ApiKey: [ ]
+tags:
+  - name: LWR
+    description: 'API for managing and retrieving LWR-related data, including rulesets, rules, and professional fields.'
