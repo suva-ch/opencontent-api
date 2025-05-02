@@ -1,7 +1,7 @@
 openapi: 3.0.4
 info:
-  title: LWR API
-  description: API for LWR functionality.
+  title: vitalRules API
+  description: API for vitalRules functionality.
   contact:
     name: Suva
     url: https://github.com/suva-ch/opencontent-api
@@ -19,7 +19,8 @@ paths:
   /v1/Lwr:
     get:
       tags:
-        - LWR
+        - vitalRules
+        - prevention
       summary: Get rulesets by professional field
       description: Retrieves a list of rulesets filtered by professional field and language.
       parameters:
@@ -55,7 +56,8 @@ paths:
   '/v1/Lwr/{id}':
     get:
       tags:
-        - LWR
+        - vitalRules
+        - prevention
       summary: Get ruleset by ID
       description: Retrieves a ruleset by its unique ID and language.
       parameters:
@@ -84,7 +86,8 @@ paths:
   '/v1/Lwr/{uniqueId}':
     get:
       tags:
-        - LWR
+        - vitalRules
+        - prevention
       summary: Get ruleset by unique ID
       description: Retrieves a ruleset by its unique ID with language embedded (id_language).
       parameters:
@@ -105,7 +108,8 @@ paths:
   '/v1/Lwr/rules/{id}':
     get:
       tags:
-        - LWR
+        - vitalRules
+        - prevention
       summary: Get rule by ID
       description: Retrieves a rule by its unique ID and language.
       parameters:
@@ -134,7 +138,8 @@ paths:
   '/v1/Lwr/rules/{uniqueId}':
     get:
       tags:
-        - LWR
+        - vitalRules
+        - prevention
       summary: Get rule by unique ID
       description: Retrieves a rule by its unique ID with language embedded (id_language).
       parameters:
@@ -155,7 +160,8 @@ paths:
   /v1/Lwr/languages:
     get:
       tags:
-        - LWR
+        - vitalRules
+        - prevention
       summary: Get languages
       description: Retrieves a list of available languages for LWR.
       responses:
@@ -170,7 +176,8 @@ paths:
   /v1/Lwr/professionalFields:
     get:
       tags:
-        - LWR
+        - vitalRules
+        - prevention
       summary: Get professional fields
       description: Retrieves a list of professional fields for the specified language.
       parameters:
@@ -391,5 +398,5 @@ components:
 security:
   - ApiKey: [ ]
 tags:
-  - name: LWR
+  - name: vitalRules
     description: 'API for managing and retrieving LWR-related data, including rulesets, rules, and professional fields.'
