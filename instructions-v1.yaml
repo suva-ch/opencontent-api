@@ -5,16 +5,16 @@ info:
   contact:
     name: Suva
     url: https://github.com/suva-ch/opencontent-api
-    email: no-reply@suva.ch
+    email: online-services.praevention@suva.ch
   license:
     name: Apache License 2.0
     url: https://www.apache.org/licenses/LICENSE-2.0.html
   version: v1
 servers:
-  - url: https://www.suva.ch/contentApi/
-    description: Production server
-  - url: https://intg.suva.ch/contentApi/
-    description: Staging server
+  - url: https://intg.suva.ch/contentApi
+    description: INTG (Headless-Proxy)
+  - url: https://www.suva.ch/contentApi
+    description: PROD (Headless-Proxy)
 paths:
   /v1/Dsp/instructions:
     get:
@@ -22,7 +22,7 @@ paths:
         - instructions
         - prevention
       summary: Get instructions
-      description: Retrieves a list of DSP instructions for the specified language.
+      description: Retrieves a list of instructions for the specified language.
       parameters:
         - name: lang
           in: query
@@ -33,7 +33,7 @@ paths:
           example: de-CH
       responses:
         '200':
-          description: Returns the list of DSP instructions.
+          description: Returns the list of instructions.
           content:
             application/json:
               schema:
@@ -46,14 +46,16 @@ paths:
                     - $ref: '#/components/schemas/TextInstructionDto'
                     - $ref: '#/components/schemas/VideoInstructionDto'
                     - $ref: '#/components/schemas/ELearningInstructionDto'
-                  description: 'Base class for DSP instruction data transfer objects, containing common properties.'
+                  description: 'Base class for instruction data transfer objects, containing common properties.'
+      security:
+        - ApiKey: [ ]
   /v1/Dsp/languages:
     get:
       tags:
         - instructions
         - prevention
       summary: Get languages
-      description: Retrieves a list of available languages for DSP.
+      description: Retrieves a list of available languages for instructions.
       responses:
         '200':
           description: Returns the list of available languages.
@@ -63,6 +65,8 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/LanguageDto'
+      security:
+        - ApiKey: [ ]
   /v1/Dsp/jobprofiles:
     get:
       tags:
@@ -87,6 +91,8 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/KeyValueItemFieldDto'
+      security:
+        - ApiKey: [ ]
   /v1/Dsp/professionalFields:
     get:
       tags:
@@ -111,6 +117,8 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/KeyValueItemFieldDto'
+      security:
+        - ApiKey: [ ]
   /v1/Dsp/authors:
     get:
       tags:
@@ -135,6 +143,8 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/KeyValueItemFieldDto'
+      security:
+        - ApiKey: [ ]
   /v1/Dsp/scormformats:
     get:
       tags:
@@ -159,13 +169,15 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/KeyValueItemFieldDto'
+      security:
+        - ApiKey: [ ]
   /v1/Dsp/types:
     get:
       tags:
         - instructions
         - prevention
-      summary: Get DSP types
-      description: Retrieves a list of DSP types for the specified language.
+      summary: Get instruction types
+      description: Retrieves a list of instructions types for the specified language.
       parameters:
         - name: lang
           in: query
@@ -176,13 +188,15 @@ paths:
           example: de-CH
       responses:
         '200':
-          description: Returns the list of DSP types.
+          description: Returns the list of instruction types.
           content:
             application/json:
               schema:
                 type: array
                 items:
                   $ref: '#/components/schemas/KeyValueItemFieldDto'
+      security:
+        - ApiKey: [ ]
 components:
   schemas:
     BaseInstructionDto:
@@ -266,7 +280,7 @@ components:
           description: Issue date of the instruction.
           format: date-time
       additionalProperties: false
-      description: 'Base class for DSP instruction data transfer objects, containing common properties.'
+      description: 'Base class for instruction data transfer objects, containing common properties.'
       discriminator:
         propertyName: $type
     ELearningInstructionDto:
@@ -287,7 +301,7 @@ components:
           description: Link to the e-learning file.
           nullable: true
       additionalProperties: false
-      description: 'Represents an e-learning DSP instruction, including SCORM format and file link.'
+      description: 'Represents an e-learning instruction, including SCORM format and file link.'
     Fields:
       title: ImageSetFields
       type: object
@@ -327,7 +341,7 @@ components:
         image:
           $ref: '#/components/schemas/ResponsiveImageSetViewModel'
       additionalProperties: false
-      description: 'Represents a DSP instruction with an associated image set, extending base instruction properties.'
+      description: 'Represents a instruction with an associated image set, extending base instruction properties.'
       discriminator:
         propertyName: $type
     KeyValueItemFieldDto:
@@ -387,14 +401,14 @@ components:
         fields:
           $ref: '#/components/schemas/Fields'
       additionalProperties: false
-      description: Represents a responsive image set for use in DSP instructions.
+      description: Represents a responsive image set for use in instructions.
     TextInstructionDto:
       title: TextInstruction
       type: object
       allOf:
         - $ref: '#/components/schemas/BaseInstructionDto'
       additionalProperties: false
-      description: 'Represents a text-based DSP instruction, inheriting base instruction properties.'
+      description: 'Represents a text-based instruction, inheriting base instruction properties.'
     Value:
       title: ImageSetValue
       type: object
@@ -434,15 +448,15 @@ components:
           description: Vimeo ID of the video instruction.
           format: int64
       additionalProperties: false
-      description: 'Represents a video-based DSP instruction, including a Vimeo ID and an image set.'
+      description: 'Represents a video-based instruction, including a Vimeo ID and an image set.'
   securitySchemes:
     ApiKey:
       type: apiKey
       description: ApiKey must appear in header
-      name: ApiKey
+      name: X-API-KEY
       in: header
 security:
-  - ApiKey: [ ]
+  - X-API-KEY: [ ]
 tags:
   - name: instructions
-    description: 'API for managing and retrieving DSP-related data, including instructions, job profiles, and professional fields.'
+    description: 'API for managing and retrieving instructions related data, including job profiles and professional fields.'

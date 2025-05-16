@@ -5,16 +5,16 @@ info:
   contact:
     name: Suva
     url: https://github.com/suva-ch/opencontent-api
-    email: no-reply@suva.ch
+    email: online-services.praevention@suva.ch
   license:
     name: Apache License 2.0
     url: https://www.apache.org/licenses/LICENSE-2.0.html
   version: v1
 servers:
-  - url: https://www.suva.ch/contentApi/
-    description: Production server
-  - url: https://intg.suva.ch/contentApi/
-    description: Staging server
+  - url: https://intg.suva.ch/contentApi
+    description: INTG (Headless-Proxy)
+  - url: https://www.suva.ch/contentApi
+    description: PROD (Headless-Proxy)
 paths:
   /v1/PreventionDocuments:
     get:
@@ -73,6 +73,8 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/ProductDto'
+      security:
+        - ApiKey: [ ]
   /v1/PreventionDocuments/industries:
     get:
       tags:
@@ -97,6 +99,8 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/FilterDto'
+      security:
+        - ApiKey: [ ]
   /v1/PreventionDocuments/topics:
     get:
       tags:
@@ -121,6 +125,8 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/FilterDto'
+      security:
+        - ApiKey: [ ]
   /v1/PreventionDocuments/contenttypes:
     get:
       tags:
@@ -145,6 +151,8 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/FilterDto'
+      security:
+        - ApiKey: [ ]
   /v1/PreventionDocuments/audiences:
     get:
       tags:
@@ -169,6 +177,8 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/FilterDto'
+      security:
+        - ApiKey: [ ]
 components:
   schemas:
     FilterDto:
@@ -291,10 +301,10 @@ components:
     ApiKey:
       type: apiKey
       description: ApiKey must appear in header
-      name: ApiKey
+      name: X-API-KEY
       in: header
 security:
-  - ApiKey: [ ]
+  - X-API-KEY: [ ]
 tags:
   - name: documents
     description: 'API for managing and retrieving prevention documents, including filtering by industries, topics, and content types.'

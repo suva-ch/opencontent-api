@@ -5,16 +5,16 @@ info:
   contact:
     name: Suva
     url: https://github.com/suva-ch/opencontent-api
-    email: no-reply@suva.ch
+    email: online-services.praevention@suva.ch
   license:
     name: Apache License 2.0
     url: https://www.apache.org/licenses/LICENSE-2.0.html
   version: v1
 servers:
-  - url: https://www.suva.ch/contentApi/
-    description: Production server
-  - url: https://intg.suva.ch/contentApi/
-    description: Staging server
+  - url: https://intg.suva.ch/contentApi
+    description: INTG (Headless-Proxy)
+  - url: https://www.suva.ch/contentApi
+    description: PROD (Headless-Proxy)
 paths:
   /v1/Lwr:
     get:
@@ -53,6 +53,8 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/RulesetDto'
+      security:
+        - ApiKey: [ ]
   '/v1/Lwr/{id}':
     get:
       tags:
@@ -83,6 +85,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/RulesetDto'
+      security:
+        - ApiKey: [ ]
   '/v1/Lwr/{uniqueId}':
     get:
       tags:
@@ -105,6 +109,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/RulesetDto'
+      security:
+        - ApiKey: [ ]
   '/v1/Lwr/rules/{id}':
     get:
       tags:
@@ -135,6 +141,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/RuleDto'
+      security:
+        - ApiKey: [ ]
   '/v1/Lwr/rules/{uniqueId}':
     get:
       tags:
@@ -157,6 +165,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/RuleDto'
+      security:
+        - ApiKey: [ ]
   /v1/Lwr/languages:
     get:
       tags:
@@ -173,6 +183,8 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/LanguageDto'
+      security:
+        - ApiKey: [ ]
   /v1/Lwr/professionalFields:
     get:
       tags:
@@ -197,6 +209,8 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/KeyValueItemFieldDto'
+      security:
+        - ApiKey: [ ]
 components:
   schemas:
     KeyValueItemFieldDto:
@@ -393,10 +407,10 @@ components:
     ApiKey:
       type: apiKey
       description: ApiKey must appear in header
-      name: ApiKey
+      name: X-API-KEY
       in: header
 security:
-  - ApiKey: [ ]
+  - X-API-KEY: [ ]
 tags:
   - name: vitalRules
     description: 'API for managing and retrieving LWR-related data, including rulesets, rules, and professional fields.'

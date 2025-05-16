@@ -5,16 +5,16 @@ info:
   contact:
     name: Suva
     url: https://github.com/suva-ch/opencontent-api
-    email: no-reply@suva.ch
+    email: online-services.praevention@suva.ch
   license:
     name: Apache License 2.0
     url: https://www.apache.org/licenses/LICENSE-2.0.html
   version: v1
 servers:
-  - url: https://www.suva.ch/contentApi/
-    description: Production server
-  - url: https://intg.suva.ch/contentApi/
-    description: Staging server
+  - url: https://intg.suva.ch/contentApi
+    description: INTG (Headless-Proxy)
+  - url: https://www.suva.ch/contentApi
+    description: PROD (Headless-Proxy)
 paths:
   '/v1/Checklists/{id}':
     get:
@@ -48,6 +48,8 @@ paths:
                 $ref: '#/components/schemas/ChecklistDetailDto'
         '404':
           description: Checklist not found.
+      security:
+        - ApiKey: [ ]
   '/v1/Checklists/{uniqueId}':
     get:
       tags:
@@ -74,6 +76,8 @@ paths:
           description: Checklist not found.
         '400':
           description: Invalid Url.
+      security:
+        - ApiKey: [ ]
   /v1/Checklists:
     get:
       tags:
@@ -137,6 +141,8 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/ChecklistListDto'
+      security:
+        - ApiKey: [ ]
   /v1/Checklists/industries:
     get:
       tags:
@@ -161,6 +167,8 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/FilterDto'
+      security:
+        - ApiKey: [ ]
   /v1/Checklists/topics:
     get:
       tags:
@@ -185,6 +193,8 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/FilterDto'
+      security:
+        - ApiKey: [ ]
   /v1/Checklists/audiences:
     get:
       tags:
@@ -209,6 +219,8 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/FilterDto'
+      security:
+        - ApiKey: [ ]
 components:
   schemas:
     ActionDto:
@@ -489,10 +501,10 @@ components:
     ApiKey:
       type: apiKey
       description: ApiKey must appear in header
-      name: ApiKey
+      name: X-API-KEY
       in: header
 security:
-  - ApiKey: [ ]
+  - X-API-KEY: [ ]
 tags:
   - name: checklists
     description: 'API for managing and retrieving checklists, including filtering by industries, topics, and audiences.'
