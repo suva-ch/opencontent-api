@@ -108,6 +108,9 @@ jobs:
           VERSION="${{ inputs.version }}"
           BRANCH="contracts/v$VERSION"
 
+          # Use PAT for push so the runner has write access
+          git remote set-url origin "https://x-access-token:${{ secrets.CONTRACTS_BOT_TOKEN }}@github.com/${{ github.repository }}.git"
+
           git checkout -b "$BRANCH"
           git commit -m "chore: update OpenAPI contracts to v$VERSION"
           git push origin "$BRANCH"
