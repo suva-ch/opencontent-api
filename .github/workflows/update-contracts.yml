@@ -64,8 +64,8 @@ jobs:
 
           # Contracts to update — add new entries here when new docs are introduced
           DOCS=(
-            "Checklists-v1"
-            "Documents-v1"
+            "checklists-v1"
+            "documents-v1"
             "instructions-v1"
             "vitalRules-v1"
           )
