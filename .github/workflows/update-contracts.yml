@@ -38,7 +38,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          token: ${{ secrets.CONTRACTS_BOT_TOKEN || secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.CONTRACTS_BOT_TOKEN }}
 
       - name: Determine base URL
         id: base_url
@@ -94,7 +94,7 @@ jobs:
 
       - name: Commit and open pull request
         env:
-          GH_TOKEN: ${{ secrets.CONTRACTS_BOT_TOKEN || secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.CONTRACTS_BOT_TOKEN }}
         run: |
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
