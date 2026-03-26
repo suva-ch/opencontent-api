@@ -109,8 +109,10 @@ jobs:
           VERSION="${{ inputs.version }}"
           BRANCH="contracts/v$VERSION"
 
-          # Configure PAT as credential so git push is authenticated
-          git config --local credential.helper '!f() { echo "username=x-access-token"; echo "password=$PAT"; }; f'
+          # Set PAT as http Authorization header — same mechanism as actions/checkout
+          # Uses env var $PAT so the value is never interpolated into the YAML by GitHub
+          ENCODED=$(printf '%s' "x-access-token:$PAT" | base64 -w 0)
+          git config --local http.https://github.com/.extraheader "AUTHORIZATION: basic $ENCODED"
 
           git checkout -b "$BRANCH"
           git commit -m "chore: update OpenAPI contracts to v$VERSION"
