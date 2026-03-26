@@ -1,0 +1,107 @@
+# Workflow: Fetcht OpenAPI YAML-Contracts vom PROD-Endpoint und commited sie
+# ins Repo. Wird via workflow_dispatch ausgelöst (z.B. durch Octopus Deploy
+# nach einem erfolgreichen PROD-Deployment).
+#
+# Required Repository Secrets (Settings → Secrets → Actions):
+#   CONTRACTS_BOT_TOKEN  - GitHub PAT oder App-Token mit 'contents: write'
+#                          auf diesem Repo (oder GITHUB_TOKEN falls Repo nicht
+#                          protected ist)
+#
+# Required Repository Variables (Settings → Variables → Actions):
+#   CONTENT_API_BASE_URL - Basis-URL des PROD-Endpoints
+#                          z.B. "https://www.suva.ch/contentApi"
+
+name: Update OpenAPI Contracts
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Content API release version (e.g. 1.2.3)"
+        required: true
+        type: string
+      base_url:
+        description: "Content API base URL (override, optional)"
+        required: false
+        type: string
+        default: ""
+
+jobs:
+  update-contracts:
+    name: Fetch and commit OpenAPI contracts
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.CONTRACTS_BOT_TOKEN || secrets.GITHUB_TOKEN }}
+
+      - name: Determine base URL
+        id: base_url
+        run: |
+          URL="${{ inputs.base_url }}"
+          if [ -z "$URL" ]; then
+            URL="${{ vars.CONTENT_API_BASE_URL }}"
+          fi
+          if [ -z "$URL" ]; then
+            echo "::error::No base URL provided. Set the 'base_url' input or the CONTENT_API_BASE_URL repository variable."
+            exit 1
+          fi
+          # Strip trailing slash
+          URL="${URL%/}"
+          echo "url=$URL" >> "$GITHUB_OUTPUT"
+          echo "Base URL: $URL"
+
+      - name: Fetch OpenAPI YAML contracts
+        id: fetch
+        run: |
+          set -euo pipefail
+
+          BASE_URL="${{ steps.base_url.outputs.url }}"
+
+          # Contracts to update — add new entries here when new docs are introduced
+          DOCS=(
+            "Checklists-v1"
+            "Documents-v1"
+            "instructions-v1"
+            "vitalRules-v1"
+          )
+
+          echo "Contracts to update: ${DOCS[*]}"
+
+          FAILED=()
+          for DOC in "${DOCS[@]}"; do
+            URL="$BASE_URL/$DOC.yaml"
+            echo "Fetching $URL ..."
+            HTTP_CODE=$(curl --silent --show-error --output "$DOC.yaml" --write-out "%{http_code}" "$URL") || true
+            if [ "$HTTP_CODE" != "200" ]; then
+              echo "::warning::Failed to fetch '$DOC' (HTTP $HTTP_CODE)"
+              FAILED+=("$DOC")
+              rm -f "$DOC.yaml"
+            else
+              echo "  OK — $DOC.yaml"
+            fi
+          done
+
+          if [ "${#FAILED[@]}" -gt 0 ]; then
+            echo "::error::Failed to fetch: ${FAILED[*]}"
+            exit 1
+          fi
+
+      - name: Commit and push updated contracts
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          git add .
+          if git diff --cached --quiet; then
+            echo "No changes — contracts are already up to date."
+            exit 0
+          fi
+
+          VERSION="${{ inputs.version }}"
+          git commit -m "chore: update OpenAPI contracts to v$VERSION"
+          git push
