@@ -95,6 +95,7 @@ jobs:
       - name: Commit and open pull request
         env:
           GH_TOKEN: ${{ secrets.CONTRACTS_BOT_TOKEN }}
+          PAT: ${{ secrets.CONTRACTS_BOT_TOKEN }}
         run: |
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
@@ -108,8 +109,8 @@ jobs:
           VERSION="${{ inputs.version }}"
           BRANCH="contracts/v$VERSION"
 
-          # Use PAT for push so the runner has write access
-          git remote set-url origin "https://x-access-token:${{ secrets.CONTRACTS_BOT_TOKEN }}@github.com/${{ github.repository }}.git"
+          # Configure PAT as credential so git push is authenticated
+          git config --local credential.helper '!f() { echo "username=x-access-token"; echo "password=$PAT"; }; f'
 
           git checkout -b "$BRANCH"
           git commit -m "chore: update OpenAPI contracts to v$VERSION"
