@@ -11,10 +11,10 @@ info:
     url: https://www.apache.org/licenses/LICENSE-2.0.html
   version: v1
 servers:
-  - url: https://intg.suva.ch/contentApi
-    description: INTG (Headless-Proxy)
   - url: https://www.suva.ch/contentApi
     description: PROD (Headless-Proxy)
+  - url: https://intg.suva.ch/contentApi
+    description: INTG (Headless-Proxy)
 paths:
   /v1/Lwr:
     get:
@@ -217,15 +217,13 @@ components:
       title: KeyValueItemField
       required:
         - id
-        - lastUpdateDate
         - name
-        - revision
       type: object
       properties:
         id:
           type: string
           description: Unique identifier of the field item.
-          format: uuid
+          nullable: true
         name:
           type: string
           description: Name of the field item.
@@ -238,6 +236,7 @@ components:
           type: string
           description: Last update date of the field item.
           format: date-time
+          nullable: true
       additionalProperties: false
       description: 'Represents a key-value pair for a field item, typically used for categorizing or filtering content (e.g., industries, topics).'
     LanguageDto:

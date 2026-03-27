@@ -11,10 +11,10 @@ info:
     url: https://www.apache.org/licenses/LICENSE-2.0.html
   version: v1
 servers:
-  - url: https://intg.suva.ch/contentApi
-    description: INTG (Headless-Proxy)
   - url: https://www.suva.ch/contentApi
     description: PROD (Headless-Proxy)
+  - url: https://intg.suva.ch/contentApi
+    description: INTG (Headless-Proxy)
 paths:
   '/v1/Checklists/{id}':
     get:

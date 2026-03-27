@@ -11,10 +11,10 @@ info:
     url: https://www.apache.org/licenses/LICENSE-2.0.html
   version: v1
 servers:
-  - url: https://intg.suva.ch/contentApi
-    description: INTG (Headless-Proxy)
   - url: https://www.suva.ch/contentApi
     description: PROD (Headless-Proxy)
+  - url: https://intg.suva.ch/contentApi
+    description: INTG (Headless-Proxy)
 paths:
   /v1/Dsp/instructions:
     get:
@@ -39,14 +39,7 @@ paths:
               schema:
                 type: array
                 items:
-                  title: BaseInstruction
-                  oneOf:
-                    - $ref: '#/components/schemas/BaseInstructionDto'
-                    - $ref: '#/components/schemas/InstructionWithImageDto'
-                    - $ref: '#/components/schemas/TextInstructionDto'
-                    - $ref: '#/components/schemas/VideoInstructionDto'
-                    - $ref: '#/components/schemas/ELearningInstructionDto'
-                  description: 'Base class for instruction data transfer objects, containing common properties.'
+                  $ref: '#/components/schemas/InstructionDto'
       security:
         - ApiKey: [ ]
   /v1/Dsp/languages:
@@ -199,21 +192,48 @@ paths:
         - ApiKey: [ ]
 components:
   schemas:
-    BaseInstructionDto:
-      title: BaseInstruction
-      required:
-        - $type
-        - author
-        - branchen
-        - instruktionstypen
-        - jobprofile
-        - language
-        - type
-        - uniqueId
+    ImageFields:
       type: object
       properties:
-        $type:
+        imageSetImageDefault:
+          $ref: '#/components/schemas/ImageValueParent'
+        imageSetImageM:
+          $ref: '#/components/schemas/ImageValueParent'
+        imageSetImageS:
+          $ref: '#/components/schemas/ImageValueParent'
+        imageSetImageXl:
+          $ref: '#/components/schemas/ImageValueParent'
+        imageSetImageXs:
+          $ref: '#/components/schemas/ImageValueParent'
+        imageSetImageL:
+          $ref: '#/components/schemas/ImageValueParent'
+      additionalProperties: false
+    ImageValue:
+      type: object
+      properties:
+        src:
           type: string
+          nullable: true
+        alt:
+          type: string
+          nullable: true
+        width:
+          type: string
+          nullable: true
+        height:
+          type: string
+          nullable: true
+      additionalProperties: false
+    ImageValueParent:
+      type: object
+      properties:
+        value:
+          $ref: '#/components/schemas/ImageValue'
+      additionalProperties: false
+    InstructionDto:
+      title: BaseInstruction
+      type: object
+      properties:
         uniqueId:
           type: string
           description: Unique identifier of the instruction.
@@ -279,19 +299,20 @@ components:
           type: string
           description: Issue date of the instruction.
           format: date-time
-      additionalProperties: false
-      description: 'Base class for instruction data transfer objects, containing common properties.'
-      discriminator:
-        propertyName: $type
-    ELearningInstructionDto:
-      title: ELearningInstruction
-      required:
-        - linkToFile
-        - scormFormat
-      type: object
-      allOf:
-        - $ref: '#/components/schemas/InstructionWithImageDto'
-      properties:
+        durchfuehrungsdauer:
+          type: integer
+          description: Course duration of the instruction in minutes.
+          format: int32
+        contentType:
+          type: string
+          description: Content Type of the instruction.
+          nullable: true
+        vimeoId:
+          type: integer
+          description: Vimeo ID of the video instruction.
+          format: int64
+        image:
+          $ref: '#/components/schemas/ResponsiveImageSetViewModel'
         scormFormat:
           type: string
           description: SCORM format of the e-learning instruction.
@@ -301,62 +322,18 @@ components:
           description: Link to the e-learning file.
           nullable: true
       additionalProperties: false
-      description: 'Represents an e-learning instruction, including SCORM format and file link.'
-    Fields:
-      title: ImageSetFields
-      type: object
-      properties:
-        imageSetModelDefault:
-          $ref: '#/components/schemas/ImageSetModel'
-        imageSetModelM:
-          $ref: '#/components/schemas/ImageSetModel'
-        imageSetModelS:
-          $ref: '#/components/schemas/ImageSetModel'
-        imageSetModelXl:
-          $ref: '#/components/schemas/ImageSetModel'
-        imageSetModelXs:
-          $ref: '#/components/schemas/ImageSetModel'
-        imageSetModelL:
-          $ref: '#/components/schemas/ImageSetModel'
-      additionalProperties: false
-      description: Represents a collection of image set models for different sizes in a responsive image set.
-    ImageSetModel:
-      title: ImageSetModel
-      type: object
-      properties:
-        value:
-          $ref: '#/components/schemas/Value'
-      additionalProperties: false
-      description: Represents a single image set model within a responsive image set.
-    InstructionWithImageDto:
-      title: InstructionWithImage
-      required:
-        - $type
-      type: object
-      allOf:
-        - $ref: '#/components/schemas/BaseInstructionDto'
-      properties:
-        $type:
-          type: string
-        image:
-          $ref: '#/components/schemas/ResponsiveImageSetViewModel'
-      additionalProperties: false
-      description: 'Represents a instruction with an associated image set, extending base instruction properties.'
-      discriminator:
-        propertyName: $type
+      description: 'Base class for instruction data transfer objects, containing common properties.'
     KeyValueItemFieldDto:
       title: KeyValueItemField
       required:
         - id
-        - lastUpdateDate
         - name
-        - revision
       type: object
       properties:
         id:
           type: string
           description: Unique identifier of the field item.
-          format: uuid
+          nullable: true
         name:
           type: string
           description: Name of the field item.
@@ -369,6 +346,7 @@ components:
           type: string
           description: Last update date of the field item.
           format: date-time
+          nullable: true
       additionalProperties: false
       description: 'Represents a key-value pair for a field item, typically used for categorizing or filtering content (e.g., industries, topics).'
     LanguageDto:
@@ -386,7 +364,6 @@ components:
     ResponsiveImageSetViewModel:
       title: ResponsiveImageSet
       required:
-        - id
         - url
       type: object
       properties:
@@ -399,56 +376,9 @@ components:
           description: URL of the image set.
           nullable: true
         fields:
-          $ref: '#/components/schemas/Fields'
+          $ref: '#/components/schemas/ImageFields'
       additionalProperties: false
       description: Represents a responsive image set for use in instructions.
-    TextInstructionDto:
-      title: TextInstruction
-      type: object
-      allOf:
-        - $ref: '#/components/schemas/BaseInstructionDto'
-      additionalProperties: false
-      description: 'Represents a text-based instruction, inheriting base instruction properties.'
-    Value:
-      title: ImageSetValue
-      type: object
-      properties:
-        src:
-          type: string
-          description: Source URL of the image.
-          default: ''
-          nullable: true
-        alt:
-          type: string
-          description: Alt text for the image.
-          default: ''
-          nullable: true
-        width:
-          type: string
-          description: Width of the image.
-          default: 
-          nullable: true
-        height:
-          type: string
-          description: Height of the image.
-          default: 
-          nullable: true
-      additionalProperties: false
-      description: Represents detailed image information for an image set model.
-    VideoInstructionDto:
-      title: VideoInstruction
-      required:
-        - vimeoId
-      type: object
-      allOf:
-        - $ref: '#/components/schemas/InstructionWithImageDto'
-      properties:
-        vimeoId:
-          type: integer
-          description: Vimeo ID of the video instruction.
-          format: int64
-      additionalProperties: false
-      description: 'Represents a video-based instruction, including a Vimeo ID and an image set.'
   securitySchemes:
     ApiKey:
       type: apiKey
